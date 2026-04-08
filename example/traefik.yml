@@ -1,0 +1,8 @@
+api:
+  insecure: true
+entryPoints:
+  web:
+    address: ":80"
+providers:
+  http:
+    endpoint: "http://itp:9000/config"
