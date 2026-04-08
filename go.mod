@@ -14,7 +14,7 @@ require (
 	github.com/aws/aws-sdk-go v1.44.327 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/go-acme/lego/v4 v4.16.1 // indirect
-	github.com/go-jose/go-jose/v4 v4.0.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-kit/kit v0.10.1-0.20200915143503-439c4d2ed3ea // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
