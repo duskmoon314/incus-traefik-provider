@@ -13,6 +13,15 @@ A standalone HTTP provider for [Traefik](https://traefik.io/) that discovers [In
 - [OpenTofu](https://opentofu.org/) **(Optional)**
   - I use OpenTofu to manage Incus, and currently I recommend using OpenTofu (or Terraform) to get a similar experience for docker users.
 
+### Incus remote setup
+
+To use OCI images from `docker.io` and `ghcr.io`, we need to set up remote first:
+
+```bash
+incus remote add docker https://docker.io --protocol=oci
+incus remote add ghcr https://ghcr.io --protocol=oci
+```
+
 ## Quick Start
 
 ### Using OpenTofu
