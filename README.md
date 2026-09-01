@@ -254,6 +254,17 @@ user.traefik.http.middlewares.<name>.circuitbreaker.expression=NetworkErrorRatio
 user.traefik.http.middlewares.<name>.compress=true
 ```
 
+### Provider
+
+Provider specific labels. `user.traefik.incus.network` allows the user to
+override the default NIC for IP resolution which is useful for instances using
+multiple NICs or where the default NIC isn't the same as the one configured as
+`ITP_TRAEFIK_NETWORK`.
+
+```
+user.traefik.incus.network=eth1
+```
+
 ## Endpoints
 
 | Path          | Description                                                 |

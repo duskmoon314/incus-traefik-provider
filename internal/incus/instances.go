@@ -32,13 +32,18 @@ func GetInstances(client incusclient.InstanceServer, cfg config.Config) ([]Insta
 
 	var result []Instance
 	for _, inst := range instances {
-		labels := extractLabels(inst.ExpandedConfig)
+		traefik_labels, provider_labels := extractLabels(inst.ExpandedConfig)
 
-		if !isInstanceEnabled(labels, cfg.Traefik.ExposedByDefault) {
+		network, ok := provider_labels["traefik.incus.network"]
+		if !ok {
+			network = cfg.Traefik.Network
+		}
+
+		if !isInstanceEnabled(traefik_labels, cfg.Traefik.ExposedByDefault) {
 			continue
 		}
 
-		ip, err := getInstanceIP(client, inst.Name, cfg.Traefik.Network)
+		ip, err := getInstanceIP(client, inst.Name, network)
 		if err != nil {
 			log.WithFields(log.Fields{
 				"instance": inst.Name,
@@ -49,7 +54,7 @@ func GetInstances(client incusclient.InstanceServer, cfg config.Config) ([]Insta
 
 		result = append(result, Instance{
 			Name:        inst.Name,
-			Labels:      labels,
+			Labels:      traefik_labels,
 			IP:          ip,
 			DefaultPort: getDefaultPort(inst.ExpandedDevices),
 		})
@@ -67,15 +72,25 @@ func isInstanceEnabled(labels map[string]string, exposedByDefault bool) bool {
 	return strings.EqualFold(enable, "true")
 }
 
-// extractLabels filters config keys starting with "user." and strips the prefix.
-func extractLabels(config map[string]string) map[string]string {
-	labels := make(map[string]string)
+// extractLabels filters config keys starting with "user.traefik." and strips
+// the prefix returning both the traefik labels and provider specific labels
+// starting with "user.traefik.incus."
+func extractLabels(config map[string]string) (map[string]string, map[string]string) {
+	traefik_labels := make(map[string]string)
+	provider_labels := make(map[string]string)
+
 	for k, v := range config {
-		if strings.HasPrefix(k, "user.") {
-			labels[strings.TrimPrefix(k, "user.")] = v
+		if strings.HasPrefix(k, "user.traefik.") {
+			label := strings.TrimPrefix(k, "user.")
+
+			if strings.HasPrefix(label, "traefik.incus.") {
+				provider_labels[label] = v
+			} else {
+				traefik_labels[label] = v
+			}
 		}
 	}
-	return labels
+	return traefik_labels, provider_labels
 }
 
 // getDefaultPort inspects expanded devices for proxy type devices,
